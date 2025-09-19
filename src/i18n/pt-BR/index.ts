@@ -4,8 +4,9 @@
 export default {
   failed: 'Action failed',
   success: 'Action was successful',
-  entrar: 'Enter',
-  nome: 'Name | Names',
-  senha: 'Password',
-  esqueceuSenha: 'Forgot your password?',
+  entrar: 'Entrar',
+  nome: 'Nome | Nomes',
+  senha: 'Senha',
+  esqueceuSenha: 'Esqueceu sua senha?',
+  naoTemConta: 'Não tem uma conta? Clique aqui'
 };
