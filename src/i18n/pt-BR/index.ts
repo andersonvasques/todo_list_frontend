@@ -5,8 +5,14 @@ export default {
   failed: 'Action failed',
   success: 'Action was successful',
   entrar: 'Entrar',
+  cadastrar: 'Cadastrar',
   nome: 'Nome | Nomes',
+  usuario: 'Usuário',
+  email: 'Email',
   senha: 'Senha',
+  resetarSenha: 'Resetar senha',
   esqueceuSenha: 'Esqueceu sua senha?',
-  naoTemConta: 'Não tem uma conta? Clique aqui'
+  confirmSenha: 'Confirmar senha',
+  naoTemConta: 'Não tem conta? Clique aqui',
+  possuiLogin: 'Possui login?',
 };
