@@ -1,5 +1,13 @@
 // app global css in SCSS form
 
 .border {
-  border: 1px solid var(--q-primary);
+  border: 1px solid var(--q-dark);
+}
+
+.background-site {
+  background-color: #1e90ff;
+}
+
+body {
+  background-color: #f0f8ff;
 }
