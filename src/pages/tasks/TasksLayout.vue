@@ -1,0 +1,13 @@
+<template>
+  <q-layout view="hHr LpR lFf">
+    <q-page-container>
+      <router-view></router-view>
+    </q-page-container>
+  </q-layout>
+</template>
+
+<script setup lang="ts">
+defineOptions({
+  name: 'TasksLayout',
+});
+</script>

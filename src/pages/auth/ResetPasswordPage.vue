@@ -28,7 +28,7 @@
             dense
         />
         <div class="col-6 q-py-sm flex justify-center items-center">
-            <q-btn color="orange-5" label="Resetar senha" @click="onClick" />
+            <q-btn color="orange-5" :label="t('btnSenha')" @click="onClick" />
         </div>
       </div>
     </q-card>

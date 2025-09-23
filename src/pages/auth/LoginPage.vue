@@ -73,6 +73,7 @@ const aaaa = ref<HTMLElement | null>(null);
 
 function onClick(): void {
   alert('Login');
+  window.location.href = '/tasks';
 }
 
 defineOptions({
