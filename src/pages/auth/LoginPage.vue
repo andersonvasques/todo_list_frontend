@@ -13,7 +13,6 @@
           :label="t('nome')"
           color="white"
           label-color="white"
-          placeholder="Placeholder"
           :rules="[(val) => !!val || 'Nome é obrigatório']"
           dense
         />
@@ -24,7 +23,6 @@
           :label="t('email')"
           color="white"
           label-color="white"
-          placeholder="Placeholder"
           :rules="[(val) => !!val || 'E-mail é obrigatório']"
           dense
         />
@@ -34,7 +32,6 @@
           :label="t('senha')"
           color="white"
           label-color="white"
-          placeholder="Placeholder"
           type="password"
           :rules="[(val) => !!val || 'Senha é obrigatório']"
           dense
