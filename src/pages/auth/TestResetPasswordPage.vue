@@ -1,6 +1,8 @@
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-gray-900">
-    <div class="bg-gradient-to-r from-gray-800 to-gray-700 shadow-lg rounded-lg p-8 w-full max-w-xl flex flex-col items-center">
+  <div class="min-h-screen flex items-center justify-center bg-[#F0F8FF]">
+    <div
+      class="bg-gradient-to-r from-[#1E90FF] via-blue-400 to-[#FFA500] shadow-lg rounded-lg p-8 w-full max-w-xl flex flex-col items-center"
+    >
       <div class="w-full text-center text-white text-2xl font-semibold mb-8">
         {{ t('resetarSenha') }}
       </div>
@@ -14,7 +16,7 @@
             v-model="form.senha"
             :placeholder="t('senha')"
             required
-          >
+          />
           <!-- Exemplo de validação: -->
           <!-- <div v-if="!form.senha" class="text-orange-400 text-xs mt-1">{{ t('textValidacaoSenha') }}</div> -->
         </div>
@@ -27,7 +29,7 @@
             v-model="form.confirmSenha"
             :placeholder="t('confirmSenha')"
             required
-          >
+          />
           <!-- Exemplo de validação: -->
           <!-- <div v-if="!form.confirmSenha" class="text-orange-400 text-xs mt-1">{{ t('textValidacaoConfirmSenha') }}</div> -->
         </div>
