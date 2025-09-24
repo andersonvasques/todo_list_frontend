@@ -4,7 +4,6 @@ export interface User {
 }
 
 export interface Login {
-  name: string;
   senha: string;
   email?: string;
 }
@@ -13,6 +12,7 @@ export interface Register {
   name: string;
   email: string;
   senha: string;
+  confirmSenha: string;
 }
 
 export interface ResetPassword {
