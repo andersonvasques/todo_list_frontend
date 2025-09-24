@@ -5,6 +5,7 @@
         class="q-col-gutter-md row background-card-task text-white justify-center items-center col-xl-4 col-lg-4 col-md-4 col-sm-6 col-xs-6"
       >
         <div class="col-12 q-mx-md text-center text-h6">
+          <q-icon class="q-mr-sm" :name="outlinedCalendarMonth" />
           {{ t('listaTarefa') }}
         </div>
         <div class="col-12">
@@ -23,36 +24,36 @@
           <div class="col-6 flex justify-between">
             <q-checkbox label="Teste teste teste" false-value v-model="form.inputTask" />
             <div class="q-pa-md">
-              <q-btn class="q-mx-lg" color="primary" :label="t('btnEditar')" />
-              <q-btn color="negative" :label="t('btnExcluir')" />
+              <q-btn class="q-mx-lg" :icon="outlinedEdit" color="primary" />
+              <q-btn color="negative" :icon="outlinedDelete" />
             </div>
           </div>
           <div class="col-6 flex justify-between">
             <q-checkbox label="Teste teste teste" false-value v-model="form.inputTask" />
             <div class="q-pa-md">
-              <q-btn class="q-mx-lg" color="primary" :label="t('btnEditar')" />
-              <q-btn color="negative" :label="t('btnExcluir')" />
+              <q-btn class="q-mx-lg" :icon="outlinedEdit" color="primary" />
+              <q-btn color="negative" :icon="outlinedDelete" />
             </div>
           </div>
           <div class="col-6 flex justify-between">
             <q-checkbox label="Teste teste teste" false-value v-model="form.inputTask" />
             <div class="q-pa-md">
-              <q-btn class="q-mx-lg" color="primary" :label="t('btnEditar')" />
-              <q-btn color="negative" :label="t('btnExcluir')" />
+              <q-btn class="q-mx-lg" :icon="outlinedEdit" color="primary" />
+              <q-btn color="negative" :icon="outlinedDelete" />
             </div>
           </div>
           <div class="col-6 flex justify-between">
             <q-checkbox label="Teste teste teste" false-value v-model="form.inputTask" />
             <div class="q-pa-md">
-              <q-btn class="q-mx-lg" color="primary" :label="t('btnEditar')" />
-              <q-btn color="negative" :label="t('btnExcluir')" />
+              <q-btn class="q-mx-lg" :icon="outlinedEdit" color="primary" />
+              <q-btn color="negative" :icon="outlinedDelete" />
             </div>
           </div>
           <div class="col-6 flex justify-between">
             <q-checkbox label="Teste teste teste" false-value v-model="form.inputTask" />
             <div class="q-pa-md">
-              <q-btn class="q-mx-lg" color="primary" :label="t('btnEditar')" />
-              <q-btn color="negative" :label="t('btnExcluir')" />
+              <q-btn class="q-mx-lg" :icon="outlinedEdit" color="primary" />
+              <q-btn color="negative" :icon="outlinedDelete" />
             </div>
           </div>
         </div>
@@ -66,10 +67,10 @@
     </div>
     <div class="fixed-bottom-left flex column q-gutter-md q-ml-md q-mb-lg">
       <div class="row items-center">
-        <q-btn color="primary" :label="t('btnUsuario')" @click="profile" />
+        <q-btn color="primary" :icon="outlinedAccountCircle" :label="t('btnUsuario')" @click="profile" />
       </div>
       <div class="row items-center">
-        <q-btn color="negative" :label="t('btnSair')" @click="logout" />
+        <q-btn color="negative" :icon="outlinedLogout" href="/login" onclick="return confirm('Tem certeza que deseja sair?')" :label="t('btnSair')" />
       </div>
     </div>
   </q-page>
@@ -79,6 +80,13 @@
 import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { type Tasks } from './Util/Interface';
+import {
+  outlinedAccountCircle,
+  outlinedEdit,
+  outlinedDelete,
+  outlinedLogout,
+  outlinedCalendarMonth,
+} from '@quasar/extras/material-icons-outlined';
 
 const { t } = useI18n();
 
@@ -86,10 +94,6 @@ const form = ref<Tasks>({
   addTask: '',
   inputTask: '',
 });
-
-function logout() {
-  window.location.href = '/login';
-}
 
 function profile() {
   window.location.href = '/profile';
