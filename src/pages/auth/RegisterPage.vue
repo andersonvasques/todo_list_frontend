@@ -13,7 +13,7 @@
           v-model="form.name"
           :label="t('usuario')"
           label-color="white"
-          :rules="[(val) => !!val || 'Usuário é obrigatório']"
+          :rules="[(val) => !!val || t('textValidacaoUsuario')]"
           dense
         />
         <q-input
@@ -22,7 +22,7 @@
           type="email"
           :label="t('email')"
           label-color="white"
-          :rules="[(val) => !!val || 'E-mail é obrigatório']"
+          :rules="[(val) => !!val || t('textValidacaoEmail')]"
           dense
         />
         <q-input
@@ -31,14 +31,23 @@
           type="email"
           :label="t('senha')"
           label-color="white"
-          :rules="[(val) => !!val || 'Senha é obrigatório']"
+          :rules="[(val) => !!val || t('textValidacaoSenha')]"
+          dense
+        />
+        <q-input
+          class="col-12"
+          v-model="form.confirmSenha"
+          type="email"
+          :label="t('confirmSenha')"
+          label-color="white"
+          :rules="[(val) => !!val || t('textValidacaoConfirmSenha')]"
           dense
         />
         <div class="col-12 q-my-sm flex justify-center items-center">
-          <q-btn color="orange-5" label="Registrar" @click="onClick" />
+          <q-btn color="orange-5" :label="t('btnRegistrar')" @click="onClick" />
         </div>
         <div class="col-12 q-my-sm flex justify-center items-center">
-          <router-link class="text-white" style="text-decoration: none" to="/login"> 
+          <router-link class="text-white" style="text-decoration: none" to="/login">
             {{ t('possuiLogin') }}
           </router-link>
         </div>
@@ -58,6 +67,7 @@ const form = ref<Register>({
   name: '',
   email: '',
   senha: '',
+  confirmSenha: '',
 });
 
 function onClick() {

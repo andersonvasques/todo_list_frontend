@@ -14,7 +14,7 @@
             type="password"
             :label="t('senha')"
             label-color="white"
-            :rules="[(val) => !!val || 'Senha é obrigatório']"
+            :rules="[(val) => !!val || t('textValidacaoSenha')]"
             dense
         />
         <q-input
@@ -24,7 +24,7 @@
             type="password"
             :label="t('confirmSenha')"
             label-color="white"
-            :rules="[(val) => !!val || 'Confirmar senha é obrigatório']"
+            :rules="[(val) => !!val || t('textValidacaoConfirmSenha')]"
             dense
         />
         <div class="col-6 q-py-sm flex justify-center items-center">

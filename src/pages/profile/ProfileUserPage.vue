@@ -4,7 +4,7 @@
       <q-card
         class="q-col-gutter-md q-pa-md q-mt-xl row background-card-task col-xl-4 col-lg-4 col-md-4 col-sm-6 col-xs-6"
       >
-        <div class="col-12 q-mx-md text-white text-h5">
+        <div class="col-12 q-mx-md text-white text-bold text-h5">
           {{ t('infoPerfil') }}
         </div>
         <div class="col-12 q-mx-md text-white text-h6">
@@ -17,14 +17,16 @@
             color="white"
             v-model="form.name"
             :label="t('nome')"
+            :rules="[(val) => !!val || t('textValidacaoNome')]"
             dense
           />
           <q-input
             class="col-12 q-ma-md"
             label-color="white"
             color="white"
-            v-model="form.name"
+            v-model="form.email"
             :label="t('email')"
+            :rules="[(val) => !!val || t('textValidacaoEmail')]"
             dense
           />
         </div>
@@ -35,7 +37,7 @@
       <q-card
         class="q-col-gutter-md q-pa-md q-mt-xl row background-card-task col-xl-4 col-lg-4 col-md-4 col-sm-6 col-xs-6"
       >
-        <div class="col-12 q-mx-md text-white text-h5">
+        <div class="col-12 q-mx-md text-white text-bold text-h5">
           {{ t('atualizarSenha') }}
         </div>
         <div class="col-12 q-mx-md text-white text-h6">
@@ -48,6 +50,7 @@
             color="white"
             v-model="form.password"
             :label="t('senha')"
+            :rules="[(val) => !!val || t('textValidacaoSenha')]"
             dense
           />
           <q-input
@@ -56,6 +59,7 @@
             color="white"
             v-model="form.newPassword"
             :label="t('novaSenha')"
+            :rules="[(val) => !!val || t('textValidacaoNovaSenha')]"
             dense
           />
           <q-input
@@ -64,6 +68,7 @@
             color="white"
             v-model="form.confirmPassword"
             :label="t('confirmSenha')"
+            :rules="[(val) => !!val || t('textValidacaoConfirmSenha')]"
             dense
           />
         </div>
@@ -74,14 +79,14 @@
       <q-card
         class="q-col-gutter-md q-pa-md q-mt-xl q-mb-xl row background-card-task justify-center items-center col-xl-4 col-lg-4 col-md-4 col-sm-6 col-xs-6"
       >
-        <div class="col-12 q-ml-md text-white text-h5">
+        <div class="col-12 q-ml-md text-white text-bold text-h5">
             {{ t('DeletarConta') }}
         </div>
         <div class="col-12 q-ml-md q-ml-md text-white text-h6">
-            Caso desejar deletar sua conta, não será possível reverter a ação
+            {{ t('textDeletarConta') }}
         </div>
         <div class="col-12 q-mb-md q-ml-md flex justify-start items-start">
-            <q-btn color="orange-5" label="Deletar" />
+            <q-btn color="orange-5" :label="t('btnDeletar')" />
         </div>
       </q-card>
     </div>

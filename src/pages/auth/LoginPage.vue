@@ -9,21 +9,12 @@
       <div class="col-6">
         <q-input
           class="col-12"
-          v-model="form.name"
-          :label="t('nome')"
-          color="white"
-          label-color="white"
-          :rules="[(val) => !!val || 'Nome é obrigatório']"
-          dense
-        />
-        <q-input
-          class="col-12"
           ref="aaaa"
           v-model="form.email"
           :label="t('email')"
           color="white"
           label-color="white"
-          :rules="[(val) => !!val || 'E-mail é obrigatório']"
+          :rules="[(val) => !!val || t('textValidacaoEmail')]"
           dense
         />
         <q-input
@@ -33,7 +24,7 @@
           color="white"
           label-color="white"
           type="password"
-          :rules="[(val) => !!val || 'Senha é obrigatório']"
+          :rules="[(val) => !!val || t('textValidacaoSenha')]"
           dense
         />
         <div class="col-12 q-my-sm flex justify-center items-center">
@@ -64,7 +55,6 @@ import { type Login } from './Util/Interface';
 const { t } = useI18n();
 
 const form = ref<Login>({
-  name: '',
   senha: '',
   email: '',
 });
