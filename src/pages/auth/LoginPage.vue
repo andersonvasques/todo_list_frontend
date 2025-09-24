@@ -7,16 +7,7 @@
         {{ t('entrar') }}
       </div>
       <div class="col-6">
-        <q-input
-          class="col-12"
-          ref="aaaa"
-          v-model="form.email"
-          :label="t('email')"
-          color="white"
-          label-color="white"
-          :rules="[(val) => !!val || t('textValidacaoEmail')]"
-          dense
-        />
+        <InputEmailComponent />
         <q-input
           class="col-12"
           v-model="form.senha"
@@ -49,8 +40,8 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-
 import { type Login } from './Util/Interface';
+import InputEmailComponent from 'src/components/Inputs/InputEmailComponent.vue';
 
 const { t } = useI18n();
 
@@ -58,8 +49,6 @@ const form = ref<Login>({
   senha: '',
   email: '',
 });
-
-const aaaa = ref<HTMLElement | null>(null);
 
 function onClick(): void {
   alert('Login');

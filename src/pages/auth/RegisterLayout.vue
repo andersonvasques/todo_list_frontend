@@ -1,12 +1,10 @@
 <template>
-  <q-layout view="lHh Lpr lFf">
-    <q-page-container>
-      <router-view />
-    </q-page-container>
-  </q-layout>
+  <LayoutComponent />
 </template>
 
 <script setup lang="ts">
+import LayoutComponent from 'src/components/auth/LayoutComponent.vue';
+
 defineOptions({
   name: 'RegisterLayout',
 });
