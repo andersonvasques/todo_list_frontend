@@ -10,6 +10,8 @@ import TasksLayout from 'src/pages/tasks/TasksLayout.vue';
 import TasksPage from 'src/pages/tasks/TasksPage.vue';
 import ProfileUserLayout from 'src/pages/profile/ProfileUserLayout.vue';
 import ProfileUserPage from 'src/pages/profile/ProfileUserPage.vue';
+import TesteResetPasswordLayout from 'src/pages/auth/TesteResetPasswordLayout.vue';
+import TesteResetPasswordPage from 'src/pages/auth/TestResetPasswordPage.vue';
 
 const routes: RouteRecordRaw[] = [
   {
@@ -52,6 +54,13 @@ const routes: RouteRecordRaw[] = [
     name: 'profile-user-layout',
     component: ProfileUserLayout,
     children: [{ path: '', name: 'profile-user-page', component: ProfileUserPage }],
+  },
+
+  {
+    path: '/teste-reset-password',
+    name: 'teste-reset-password-layout',
+    component: TesteResetPasswordLayout,
+    children: [{ path: '', name: 'teste-reset-password-page', component: TesteResetPasswordPage }],
   },
 
   // Always leave this as last one,
