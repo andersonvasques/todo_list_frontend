@@ -11,23 +11,15 @@
           {{ t('textInfoPerfil') }}
         </div>
         <div class="col-6">
-          <q-input
-            class="col-12 q-ma-md"
-            label-color="white"
-            color="white"
+          <InputComponent
             v-model="form.name"
             :label="t('nome')"
             :rules="[(val) => !!val || t('textValidacaoNome')]"
-            dense
           />
-          <q-input
-            class="col-12 q-ma-md"
-            label-color="white"
-            color="white"
+          <InputComponent
             v-model="form.email"
             :label="t('email')"
             :rules="[(val) => !!val || t('textValidacaoEmail')]"
-            dense
           />
         </div>
         <div class="col-12 q-mb-md q-ml-md flex justify-start items-start">
@@ -44,32 +36,20 @@
           {{ t('textAtualizarSenha') }}
         </div>
         <div class="col-6">
-          <q-input
-            class="col-12 q-ma-md"
-            label-color="white"
-            color="white"
+          <InputComponent
             v-model="form.password"
             :label="t('senha')"
             :rules="[(val) => !!val || t('textValidacaoSenha')]"
-            dense
           />
-          <q-input
-            class="col-12 q-ma-md"
-            label-color="white"
-            color="white"
+          <InputComponent
             v-model="form.newPassword"
             :label="t('novaSenha')"
             :rules="[(val) => !!val || t('textValidacaoNovaSenha')]"
-            dense
           />
-          <q-input
-            class="col-12 q-ma-md"
-            label-color="white"
-            color="white"
+          <InputComponent
             v-model="form.confirmPassword"
             :label="t('confirmSenha')"
             :rules="[(val) => !!val || t('textValidacaoConfirmSenha')]"
-            dense
           />
         </div>
         <div class="col-12 q-mb-md q-ml-md flex justify-start items-start">
@@ -97,6 +77,7 @@
 import { useI18n } from 'vue-i18n';
 import { ref } from 'vue';
 import { type Profile } from './Util/Interface';
+import InputComponent from 'src/components/Inputs/InputComponent.vue';
 
 const { t } = useI18n();
 

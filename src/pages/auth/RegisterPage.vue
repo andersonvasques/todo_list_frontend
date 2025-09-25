@@ -1,47 +1,34 @@
 <template>
   <q-page class="row flex justify-center items-center">
     <q-card
+      :style="{ borderRadius: '20px' }"
       class="q-col-gutter-md q-pa-md row justify-center items-center background-site col-xl-4 col-lg-4 col-md-4 col-sm-6 col-xs-6"
     >
-      <div class="col-12 q-mx-md text-center text-white text-h6">
+      <div class="col-12 q-mx-md text-center text-white text-bold text-h4">
         {{ t('cadastrar') }}
       </div>
       <div class="col-6">
-        <q-input
-          class="col-12"
-          color="white"
+        <InputComponent
           v-model="form.name"
-          :label="t('usuario')"
-          label-color="white"
-          :rules="[(val) => !!val || t('textValidacaoUsuario')]"
-          dense
+          :label="t('nome')"
+          :rules="[(val) => !!val || t('textValidacaoNome')]"
         />
-        <q-input
-          class="col-12"
+        <InputComponent
           v-model="form.email"
-          type="email"
           :label="t('email')"
-          label-color="white"
           :rules="[(val) => !!val || t('textValidacaoEmail')]"
-          dense
         />
-        <q-input
-          class="col-12"
+        <InputComponent
           v-model="form.senha"
-          type="email"
           :label="t('senha')"
-          label-color="white"
+          type="password"
           :rules="[(val) => !!val || t('textValidacaoSenha')]"
-          dense
         />
-        <q-input
-          class="col-12"
+        <InputComponent
           v-model="form.confirmSenha"
-          type="email"
           :label="t('confirmSenha')"
-          label-color="white"
+          type="password"
           :rules="[(val) => !!val || t('textValidacaoConfirmSenha')]"
-          dense
         />
         <div class="col-12 q-my-sm flex justify-center items-center">
           <q-btn color="orange-5" :label="t('btnRegistrar')" @click="onClick" />
@@ -57,9 +44,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { ref } from 'vue';
 import { type Register } from './Util/Interface';
+import InputComponent from 'src/components/Inputs/InputComponent.vue';
 
 const { t } = useI18n();
 
@@ -71,7 +59,6 @@ const form = ref<Register>({
 });
 
 function onClick() {
-  alert('Cadastrado');
   window.location.href = '/login';
 }
 
