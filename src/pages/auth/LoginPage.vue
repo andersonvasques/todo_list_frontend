@@ -20,7 +20,7 @@
           :rules="[(val) => !!val || t('textValidacaoSenha')]"
         />
         <div class="col-12 q-my-sm flex justify-center items-center">
-          <q-btn label="Entrar" color="orange-5" @click="onClick" />
+          <q-btn :label="t('entrar')" to="/tasks" color="orange-5" />
         </div>
         <div class="col-12 q-my-sm flex justify-center items-center">
           <router-link class="text-white" style="text-decoration: none" to="/reset-password">{{
@@ -50,10 +50,6 @@ const form = ref<Login>({
   email: '',
   senha: '',
 });
-
-function onClick(): void {
-  window.location.href = '/tasks';
-}
 
 defineOptions({
   name: 'LoginPage',

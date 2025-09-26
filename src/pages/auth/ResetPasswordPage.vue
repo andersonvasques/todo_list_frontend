@@ -19,7 +19,7 @@
           :rules="[(val) => !!val || t('textValidacaoConfirmSenha')]"
         />
         <div class="col-6 q-py-sm flex justify-center items-center">
-          <q-btn color="orange-5" :label="t('btnSenha')" @click="onClick" />
+          <q-btn color="orange-5" to="/login" :label="t('btnSenha')" />
         </div>
       </div>
     </q-card>
@@ -38,11 +38,6 @@ const form = ref<ResetPassword>({
   senha: '',
   confirmSenha: '',
 });
-
-function onClick() {
-  alert('Resetou senha');
-  window.location.href = '/login';
-}
 
 defineOptions({
   name: 'ResetPasswordPage',

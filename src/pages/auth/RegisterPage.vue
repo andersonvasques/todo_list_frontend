@@ -31,7 +31,7 @@
           :rules="[(val) => !!val || t('textValidacaoConfirmSenha')]"
         />
         <div class="col-12 q-my-sm flex justify-center items-center">
-          <q-btn color="orange-5" :label="t('btnRegistrar')" @click="onClick" />
+          <q-btn color="orange-5" to="/login" :label="t('btnRegistrar')" />
         </div>
         <div class="col-12 q-my-sm flex justify-center items-center">
           <router-link class="text-white" style="text-decoration: none" to="/login">
@@ -57,10 +57,6 @@ const form = ref<Register>({
   senha: '',
   confirmSenha: '',
 });
-
-function onClick() {
-  window.location.href = '/login';
-}
 
 defineOptions({
   name: 'RegisterPage',
