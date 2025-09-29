@@ -3,28 +3,55 @@
     <div class="col-3.5">
       <q-card
         :style="{ borderRadius: '20px' }"
-        class="q-col-gutter-md row background-card-task text-white justify-center items-center col-xl-4 col-lg-4 col-md-4 col-sm-6 col-xs-6"
+        class="q-pa-md row background-card-task text-white justify-center items-center col-xl-4 col-lg-4 col-md-4 col-sm-6 col-xs-6"
       >
         <div class="col-12 q-mx-md text-center text-bold text-h5">
           <q-icon class="q-mr-sm" :name="outlinedCalendarMonth" />
           {{ t('listaTarefa') }}
         </div>
         <div class="col-12">
-          <q-input
-            rounded
-            outlined
-            color="white"
-            class="q-ma-md"
-            v-model="form.addTask"
-            :label="t('adicionarTarefa')"
-            dense
-          >
-            <template #append>
-              <q-btn rounded color="orange-5" size="15px" style="left: 13px" label="Add" />
-            </template>
-          </q-input>
+          <div class="column justify-center items-center q-gutter-y-md">
+            <q-input
+              style="width: 400px"
+              rounded
+              outlined
+              color="white"
+              v-model="form.searchTasks"
+              :label="t('pesquisarTarefas')"
+              dense
+            >
+              <template v-slot:append>
+                <q-icon name="search" />
+              </template>
+            </q-input>
+            <div class="col-6 q-ma-md">
+              <q-input
+                rounded
+                outlined
+                color="white"
+                class="q-ma-md"
+                style="width: 500px"
+                v-model="form.addTask"
+                @keyup.enter="addNewTask"
+                @keyup.ctrl.enter="addNewTask"
+                :label="t('adicionarTarefa')"
+                dense
+              >
+                <template #append>
+                  <q-btn
+                    rounded
+                    color="orange-5"
+                    size="15px"
+                    style="left: 13px"
+                    label="Add"
+                    @click="addNewTask"
+                  />
+                </template>
+              </q-input>
+            </div>
+          </div>
           <div
-            v-for="(item, index) in items"
+            v-for="(item, index) in filteredItems"
             :key="index"
             class="row flex justify-between items-center q-px-md q-mb-sm"
           >
@@ -35,23 +62,35 @@
                 checked-icon="task_alt"
                 unchecked-icon="radio_button_unchecked"
                 v-model="item.completed"
-                @update:model-value="() => {}"
               />
-              <span
-                class="q-ml-sm text-white"
-                :class="{ 'line-through text-strike': item.completed }"
-                :style="{
-                  fontSize: '22px',
-                  textDecoration: item.completed ? 'line-through' : 'none',
-                  opacity: item.completed ? 0.7 : 1,
-                }"
-              >
-                {{ item.message }}
-              </span>
+              <div v-if="!item.isEditing" class="task-text task__edit">
+                <span
+                  class="q-ml-sm text-white task-text"
+                  :class="{ 'line-through text-strike': item.completed }"
+                  :style="{
+                    fontSize: '22px',
+                    textDecoration: item.completed ? 'line-through' : 'none',
+                    opacity: item.completed ? 0.7 : 1,
+                  }"
+                  :title="item.message"
+                >
+                  {{ item.message }}
+                </span>
+              </div>
+              <div v-else-if="item.isEditing">
+                <q-input
+                  @keyup.enter="editTask(index)"
+                  v-model="item.message"
+                  type="text"
+                  :style="{
+                    fontSize: '20px',
+                  }"
+                />
+              </div>
             </div>
             <div class="q-pa-md">
-              <q-btn class="q-mx-sm" flat :icon="outlinedEdit" />
-              <q-btn color="negative" flat :icon="outlinedDelete" />
+              <q-btn class="q-mx-sm" flat :icon="outlinedEdit" @click="editTask(index)" />
+              <q-btn color="negative" flat :icon="outlinedDelete" @click="removeTask(index)" />
             </div>
           </div>
         </div>
@@ -80,8 +119,8 @@
               </q-card-section>
 
               <q-card-actions align="right">
-                <q-btn flat label="Sair" to="/login" color="primary" v-close-popup />
                 <q-btn flat label="Cancelar" color="primary" v-close-popup />
+                <q-btn flat label="Sair" to="/login" color="primary" v-close-popup />
               </q-card-actions>
             </q-card>
           </q-dialog>
@@ -93,7 +132,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { type Tasks } from './Util/Interface';
 import {
@@ -105,20 +144,66 @@ import {
 const { t } = useI18n();
 
 const items = ref([
-  { message: 'Teste Teste Teste', completed: false },
-  { message: 'Farinha Farinha Farinha', completed: false },
-  { message: 'Bolo Bolo Bolo', completed: false },
-  { message: 'Batata Batata Batata', completed: false },
-  { message: 'Banana Banana Banana', completed: false },
+  { message: 'Teste Teste Teste', completed: false, isEditing: false },
+  { message: 'Farinha Farinha Farinha', completed: false, isEditing: false },
+  { message: 'Bolo Bolo Bolo', completed: false, isEditing: false },
+  { message: 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA', completed: false, isEditing: false },
 ]);
 
 const confirm = ref(false);
 
 const form = ref<Tasks>({
+  searchTasks: '',
   addTask: '',
 });
+
+// Filtrar por uma tarefa
+const filteredItems = computed(() => {
+  if (!form.value.searchTasks) {
+    return items.value;
+  }
+
+  const searchTerm = form.value.searchTasks.toLowerCase();
+
+  return items.value.filter((item) => item.message.toLowerCase().includes(searchTerm));
+});
+
+// Adicionar uma nova tarefa no array items
+function addNewTask() {
+  if (form.value.addTask.trim()) {
+    items.value.push({
+      message: form.value.addTask.trim(),
+      completed: false,
+      isEditing: false,
+    });
+
+    form.value.addTask = '';
+  }
+}
+
+// Editar uma tarefa
+function editTask(index: number) {
+  const item = items.value[index];
+  if (item) {
+    item.isEditing = !item.isEditing;
+  }
+}
+
+function removeTask(index: number) {
+  items.value.splice(index, 1);
+}
 
 defineOptions({
   name: 'TasksPage',
 });
 </script>
+
+<!-- Adicionando reticências -->
+<style scoped>
+.task-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 350px;
+}
+</style>
