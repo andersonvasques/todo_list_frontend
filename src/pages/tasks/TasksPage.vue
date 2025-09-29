@@ -23,24 +23,31 @@
               <q-btn rounded color="orange-5" size="15px" style="left: 13px" label="Add" />
             </template>
           </q-input>
-          <div v-for="(item, index) in items" :key="index" class="col-6 flex justify-between">
-            <div class="col-6">
+          <div
+            v-for="(item, index) in items"
+            :key="index"
+            class="row flex justify-between items-center q-px-md q-mb-sm"
+          >
+            <div class="col-8 flex items-center">
               <q-checkbox
                 size="lg"
-                style="font-size: 22px"
-                id="classCheckbox"
-                @click="taskCompleted"
                 color="white"
                 checked-icon="task_alt"
                 unchecked-icon="radio_button_unchecked"
-                :label="item.message"
-                :label-class="item.completed ?? 'line-through'"
-                true-value
                 v-model="item.completed"
+                @update:model-value="() => {}"
               />
-              <div>
-                {{ item.completed }}
-              </div>
+              <span
+                class="q-ml-sm text-white"
+                :class="{ 'line-through text-strike': item.completed }"
+                :style="{
+                  fontSize: '22px',
+                  textDecoration: item.completed ? 'line-through' : 'none',
+                  opacity: item.completed ? 0.7 : 1,
+                }"
+              >
+                {{ item.message }}
+              </span>
             </div>
             <div class="q-pa-md">
               <q-btn class="q-mx-sm" flat :icon="outlinedEdit" />
@@ -98,38 +105,18 @@ import {
 const { t } = useI18n();
 
 const items = ref([
-  { message: 'Teste Teste Teste', completed: true },
-  { message: 'Farinha Farinha Farinha', completed: true },
-  { message: 'Bolo Bolo Bolo', completed: true },
-  { message: 'Batata Batata Batata', completed: true },
-  { message: 'Banana Banana Banana', completed: true },
+  { message: 'Teste Teste Teste', completed: false },
+  { message: 'Farinha Farinha Farinha', completed: false },
+  { message: 'Bolo Bolo Bolo', completed: false },
+  { message: 'Batata Batata Batata', completed: false },
+  { message: 'Banana Banana Banana', completed: false },
 ]);
 
 const confirm = ref(false);
 
 const form = ref<Tasks>({
   addTask: '',
-  inputTask: '',
 });
-
-function taskCompleted(index: number) {
-  const item = (items.value[index]);
-
-  item.value[index].completed = !item.completed;
-}
-
-// function taskCompleted() {
-//   const checkbox = document.getElementById('classCheckbox');
-//   if (checkbox) {
-//     const labelSpan = checkbox.querySelector('.q-checkbox__label') as HTMLElement;
-//     if (labelSpan) {
-//       labelSpan.style.textDecoration =
-//         labelSpan.style.textDecoration === 'line-through' ? 'none' : 'line-through';
-//     } else {
-//       console.log('não existe');
-//     }
-//   }
-// }
 
 defineOptions({
   name: 'TasksPage',
