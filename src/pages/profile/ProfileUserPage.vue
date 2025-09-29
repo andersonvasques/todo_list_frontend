@@ -2,6 +2,7 @@
   <q-page class="row flex flex-center justify-center items-center">
     <div class="col-6">
       <q-card
+        :style="{ borderRadius: '20px' }"
         class="q-col-gutter-md q-pa-md q-mt-xl row background-card-task col-xl-4 col-lg-4 col-md-4 col-sm-6 col-xs-6"
       >
         <div class="col-12 q-mx-md text-white text-bold text-h5">
@@ -27,6 +28,7 @@
         </div>
       </q-card>
       <q-card
+        :style="{ borderRadius: '20px' }"
         class="q-col-gutter-md q-pa-md q-mt-xl row background-card-task col-xl-4 col-lg-4 col-md-4 col-sm-6 col-xs-6"
       >
         <div class="col-12 q-mx-md text-white text-bold text-h5">
@@ -57,16 +59,17 @@
         </div>
       </q-card>
       <q-card
+        :style="{ borderRadius: '20px' }"
         class="q-col-gutter-md q-pa-md q-mt-xl q-mb-xl row background-card-task justify-center items-center col-xl-4 col-lg-4 col-md-4 col-sm-6 col-xs-6"
       >
         <div class="col-12 q-ml-md text-white text-bold text-h5">
-            {{ t('DeletarConta') }}
+          {{ t('DeletarConta') }}
         </div>
         <div class="col-12 q-ml-md q-ml-md text-white text-h6">
-            {{ t('textDeletarConta') }}
+          {{ t('textDeletarConta') }}
         </div>
         <div class="col-12 q-mb-md q-ml-md flex justify-start items-start">
-            <q-btn color="orange-5" :label="t('btnDeletar')" />
+          <q-btn color="orange-5" :label="t('btnDeletar')" />
         </div>
       </q-card>
     </div>
