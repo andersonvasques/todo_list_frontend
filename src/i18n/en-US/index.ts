@@ -37,4 +37,5 @@ export default {
   textValidacaoNovaSenha: 'Field new password is required',
   textValidacaoConfirmSenha: 'Field confirm password is required',
   textValidacaoUsuario: 'Field user is required',
+  pesquisarTarefas: 'Search for tasks',
 };

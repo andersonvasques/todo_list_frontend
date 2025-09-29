@@ -38,4 +38,5 @@ export default {
   textValidacaoConfirmSenha: 'Confirmar senha é obrigatório',
   textValidacaoUsuario: 'Usuário é obrigatório',
   btnRegistrar: 'Registrar',
+  pesquisarTarefas: 'Pesquisar por tarefas',
 };
