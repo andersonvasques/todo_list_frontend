@@ -51,7 +51,7 @@
             </div>
           </div>
           <div
-            v-for="(item, index) in filteredItems"
+            v-for="(item, index) in paginatedItems"
             :key="index"
             class="row flex justify-between items-center q-px-md q-mb-sm"
           >
@@ -80,6 +80,7 @@
               <div v-else-if="item.isEditing">
                 <q-input
                   @keyup.enter="editTask(index)"
+                  class="inputEditing"
                   v-model="item.message"
                   type="text"
                   :style="{
@@ -97,10 +98,19 @@
       </q-card>
       <div class="col-12 flex justify-end">
         <div class="q-pa-md">
-          <q-btn class="q-mx-md" outline round size="13px" color="dark" icon="arrow_back" />
+
+          <!-- clique do botao, chamar o get passando a proxima url -->
+          <q-btn class="q-mx-md" outline round size="13px" color="dark" icon="arrow_back" v-model="paginatedItems" />
+          <!-- clique do botao, chamar o get passando a url anterior -->
           <q-btn outline round size="13px" color="dark" icon="arrow_forward" />
         </div>
       </div>
+      <!-- <div v-for="tarefa in tarefas" :key="tarefa.id">
+        Tarefas -
+        Id: {{ tarefa.id }} -
+        Titulo: {{ tarefa.titulo }} -
+        Status: {{ tarefa.status }}
+      </div> -->
     </div>
     <div class="fixed-bottom-left flex column q-gutter-md q-ml-md q-mb-lg">
       <div class="row items-center q-mb-sm">
@@ -135,13 +145,56 @@
 import { ref, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { type Tasks } from './Util/Interface';
+import { api } from '../../boot/axios';
+
 import {
   outlinedEdit,
   outlinedDelete,
   outlinedCalendarMonth,
 } from '@quasar/extras/material-icons-outlined';
+import { onMounted } from 'vue';
 
 const { t } = useI18n();
+
+const tarefas = ref([]);
+
+const pagination = ref({
+  page: 1,
+  per_page: 5,
+  next_page_url: null,
+  prev_page_url: null
+});
+
+
+// async function request(url: string|null) {
+async function request() {
+
+  //pegar apenas a pagina da url
+  const request = (await api.get('tarefas')).data;
+
+  const requestLenght = request.next_page_url.length;
+  const positionPage = request.next_page_url.indexOf('page');
+  const rest = request.next_page_url.slice(positionPage, requestLenght);
+  console.log(rest);
+
+
+
+  tarefas.value = request.data
+  pagination.value = {
+    page: request.page,
+    per_page: request.per_page,
+    next_page_url: request.next_page_url,
+    prev_page_url: request.prev_page_url
+  };
+
+}
+
+onMounted(async () => {
+
+request();
+
+console.log('Request de tarefas', pagination.value);
+});
 
 const items = ref([
   { message: 'Teste Teste Teste', completed: false, isEditing: false },
@@ -149,6 +202,19 @@ const items = ref([
   { message: 'Bolo Bolo Bolo', completed: false, isEditing: false },
   { message: 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA', completed: false, isEditing: false },
 ]);
+
+// Paginação do card
+const currentPage = ref(1);
+const itemsPerPage = ref(4);
+
+const paginatedItems = computed(() => {
+  const startIndex = (currentPage.value - 1) * itemsPerPage.value;
+  const endIndex = startIndex + itemsPerPage.value;
+  console.log(`startIndex: ${startIndex}, endIndex: ${endIndex}`);
+  console.log('filteredItems', filteredItems.value.slice(startIndex, endIndex));
+
+  return filteredItems.value.slice(startIndex, endIndex);
+});
 
 const confirm = ref(false);
 
@@ -184,6 +250,7 @@ function addNewTask() {
 // Editar uma tarefa
 function editTask(index: number) {
   const item = items.value[index];
+
   if (item) {
     item.isEditing = !item.isEditing;
   }
