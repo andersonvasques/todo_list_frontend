@@ -10,6 +10,8 @@ import TasksLayout from 'src/pages/tasks/TasksLayout.vue';
 import TasksPage from 'src/pages/tasks/TasksPage.vue';
 import ProfileUserLayout from 'src/pages/profile/ProfileUserLayout.vue';
 import ProfileUserPage from 'src/pages/profile/ProfileUserPage.vue';
+import TestTasksLayout from 'src/pages/tasks/TestTasksLayout.vue';
+import TestTasksPage from 'src/pages/tasks/TestTasksPage.vue';
 
 const routes: RouteRecordRaw[] = [
   {
@@ -45,6 +47,13 @@ const routes: RouteRecordRaw[] = [
     name: 'tasks-layout',
     component: TasksLayout,
     children: [{ path: '', name: 'tasks-page', component: TasksPage }],
+  },
+
+  {
+    path: '/test-tasks',
+    name: 'test-tasks-layout',
+    component: TestTasksLayout,
+    children: [{ path: '', name: 'test-tasks-page', component: TestTasksPage }],
   },
 
   {
