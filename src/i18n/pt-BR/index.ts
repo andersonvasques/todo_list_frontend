@@ -39,4 +39,5 @@ export default {
   textValidacaoUsuario: 'Usuário é obrigatório',
   btnRegistrar: 'Registrar',
   pesquisarTarefas: 'Pesquisar por tarefas',
+  titulo: 'Título',
 };

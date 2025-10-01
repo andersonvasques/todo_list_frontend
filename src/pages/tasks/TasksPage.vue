@@ -191,9 +191,9 @@ async function request() {
 
 onMounted(async () => {
 
-request();
+  await request();
 
-console.log('Request de tarefas', pagination.value);
+  console.log('Request de tarefas', pagination.value);
 });
 
 const items = ref([

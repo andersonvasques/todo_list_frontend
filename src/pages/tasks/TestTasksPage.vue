@@ -1,115 +1,55 @@
 <template>
   <q-page class="row flex flex-center justify-center items-center">
     <div class="col-3.5">
-      <q-card
-        :style="{ borderRadius: '20px' }"
-        class="q-pa-md row background-card-task text-white justify-center items-center col-xl-4 col-lg-4 col-md-4 col-sm-6 col-xs-6"
-      >
-        <div class="col-12 q-mx-md text-center text-bold text-h5">
-          <q-icon class="q-mr-sm" :name="outlinedCalendarMonth" />
-          {{ t('listaTarefa') }}
-        </div>
-        <div class="col-12">
-          <div class="column justify-center items-center q-gutter-y-md">
-            <q-input
-              style="width: 400px"
-              rounded
-              outlined
-              color="white"
-              v-model="form.searchTasks"
-              :label="t('pesquisarTarefas')"
-              dense
-            >
-              <template v-slot:append>
-                <q-icon name="search" />
-              </template>
-            </q-input>
-            <div class="col-6 q-ma-md">
-              <q-input
-                rounded
-                outlined
-                color="white"
-                class="q-ma-md"
-                style="width: 500px"
-                v-model="form.addTask"
-                @keyup.enter="addNewTask"
-                @keyup.ctrl.enter="addNewTask"
-                :label="t('adicionarTarefa')"
-                dense
-              >
-                <template #append>
-                  <q-btn
-                    rounded
-                    color="orange-5"
-                    size="15px"
-                    style="left: 13px"
-                    label="Add"
-                    @click="addNewTask"
-                  />
-                </template>
-              </q-input>
-            </div>
-          </div>
-          <div
-            v-for="(tarefa, index) in tarefas"
-            :key="tarefa.id"
-            class="row flex justify-between items-center q-px-md q-mb-sm"
+      <q-form ref="formFilter" @submit.prevent="request" class="q-gutter-md">
+        <div class="row">
+          <q-select
+            style="width: 400px"
+            rounded
+            outlined
+            color="white"
+            v-model="form.status"
+            label="Status"
+            dense
+            map-options
+            emit-value
+            :options="optionsStatus"
+          />
+          <q-input
+            style="width: 400px"
+            rounded
+            outlined
+            color="white"
+            v-model="form.titulo"
+            :label="t('titulo')"
+            dense
           >
-            <div class="col-8 flex items-center">
-              <q-checkbox
-                size="lg"
-                color="white"
-                checked-icon="task_alt"
-                unchecked-icon="radio_button_unchecked"
-                v-model="tarefa.status"
-              />
-              <div v-if="tarefa.status == 'Aberto'" class="task-text task__edit">
-                <span
-                  class="q-ml-sm text-white task-text"
-                  :class="{ 'line-through text-strike': tarefa.status }"
-                  :style="{
-                    fontSize: '22px',
-                    textDecoration: tarefa.status ? 'line-through' : 'none',
-                    opacity: tarefa.status ? 0.7 : 1,
-                  }"
-                  :title="tarefa.titulo"
-                >
-                  {{ tarefa.titulo }}
-                </span>
-              </div>
-              <div v-else-if="tarefa.status == 'Concluido'">
-                <q-input
-                  @keyup.enter="editTask(index)"
-                  class="inputEditing"
-                  v-model="tarefa.titulo"
-                  type="text"
-                  :style="{
-                    fontSize: '20px',
-                  }"
-                />
-              </div>
-            </div>
-            <div class="q-pa-md">
-              <q-btn class="q-mx-sm" flat :icon="outlinedEdit" @click="editTask(tarefa.id, index)" />
-              <q-btn color="negative" flat :icon="outlinedDelete" @click="removeTask(index)" />
-            </div>
+            <template v-slot:append>
+              <q-icon name="search" />
+            </template>
+          </q-input>
+          <div>
+            <q-btn label="Submit" type="submit" color="primary" />
+            <q-btn label="Reset" type="reset" color="primary" flat class="q-ml-sm" />
+            <q-btn
+              label="Adicionar"
+              @click="toggleModal"
+              type="button"
+              color="primary"
+              flat
+              class="q-ml-sm"
+            />
           </div>
         </div>
-      </q-card>
-      <div class="col-12 flex justify-end">
-        <div class="q-pa-md">
-          <!-- clique do botao, chamar o get passando a proxima url -->
-          <q-btn class="q-mx-md" outline round size="13px" color="dark" icon="arrow_back" v-model="paginatedItems" />
-          <!-- clique do botao, chamar o get passando a url anterior -->
-          <q-btn outline round size="13px" color="dark" icon="arrow_forward" />
-        </div>
-      </div>
-      <div v-for="tarefa in tarefas" :key="tarefa.id">
-        Tarefas -
-        Id: {{ tarefa.id }} -
-        Titulo: {{ tarefa.titulo }} -
-        Status: {{ tarefa.status }}
-      </div>
+      </q-form>
+      <q-table :columns="columns" :rows="tarefas" row-key="id">
+        <template v-slot:body-cell-actions="scope">
+          <q-td :props="scope">
+            <q-btn class="q-mx-sm" flat :icon="outlinedEdit" @click="showTask(scope.row.id)" />
+            <q-btn color="negative" flat :icon="outlinedDelete" @click="removeTask(scope.row.id)" />
+          </q-td>
+        </template>
+      </q-table>
     </div>
     <div class="fixed-bottom-left flex column q-gutter-md q-ml-md q-mb-lg">
       <div class="row items-center q-mb-sm">
@@ -138,128 +78,163 @@
       </div>
     </div>
   </q-page>
+
+  <q-dialog v-model="modal">
+    <q-card>
+      <q-card-section>
+        <div class="text-h6">Alert</div>
+      </q-card-section>
+
+      <q-card-section class="q-pt-none">
+        <q-card>
+          <q-form ref="formAdd" @submit.prevent="submitForm" class="q-gutter-md">
+            <div>
+              <q-btn label="Submit" type="submit" color="primary" />
+              <q-btn :label="t('cancelar')" type="button" color="primary" flat class="q-ml-sm" />
+
+              <q-input
+                rounded
+                outlinedS
+                color="white"
+                v-model="payload.titulo"
+                :label="t('titulo')"
+                dense
+              />
+            </div>
+          </q-form>
+        </q-card>
+      </q-card-section>
+
+      <q-card-section align="right">
+        <q-btn flat type="button" label="OK" color="primary" @click="toggleModal" />
+      </q-card-section>
+    </q-card>
+  </q-dialog>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { type Tasks } from './Util/Interface';
-import { api } from '../../boot/axios';
+import { type OptionsStatus, type TaskApi } from './Util/Interface';
+import useApi from 'src/composables/useApi';
 
-import {
-  outlinedEdit,
-  outlinedDelete,
-  outlinedCalendarMonth,
-} from '@quasar/extras/material-icons-outlined';
+import { tarefaStore } from 'src/stores/tarefa';
+
+import { outlinedEdit, outlinedDelete } from '@quasar/extras/material-icons-outlined';
 import { onMounted } from 'vue';
+import { type QTableColumn } from 'quasar';
 
 const { t } = useI18n();
 
-const tarefas = ref([]);
+const columns: QTableColumn[] = [
+  {
+    name: 'titulo',
+    field: 'titulo',
+    label: t('titulo'),
+    align: 'left',
+    sortable: true,
+  },
+  {
+    name: 'status',
+    field: 'status_label',
+    label: 'Status',
+    align: 'center',
+    sortable: true,
+  },
+  {
+    name: 'actions',
+    field: 'actions',
+    label: 'Actions',
+    align: 'center',
+    sortable: true,
+  },
+];
 
-const pagination = ref({
-  page: 1,
-  per_page: 5,
-  next_page_url: null,
-  prev_page_url: null
+const tarefas = ref<TaskApi[]>([]);
+
+const tarefa = ref<TaskApi>({
+  status: '',
+  titulo: '',
 });
 
+const { index, show, post, update, destroy } = useApi('tarefas');
 
-// async function request(url: string|null) {
-async function request() {
+const useTarefaStore = tarefaStore();
 
-  //pegar apenas a pagina da url
-  const request = (await api.get('tarefas')).data;
+const form = ref<TaskApi>({
+  status: '',
+  titulo: '',
+});
 
-  const requestLenght = request.next_page_url.length;
-  const positionPage = request.next_page_url.indexOf('page');
-  const rest = request.next_page_url.slice(positionPage, requestLenght);
-  console.log(rest);
+const payload = ref<TaskApi>({
+  titulo: '',
+  status_label: '',
+  status: '',
+});
 
+const optionsStatus = ref<OptionsStatus[]>([
+  { value: 'Aberto', label: 'Aberto' },
+  { value: 'Concluido', label: 'Concluido' },
+]);
 
+const formFilter = ref<HTMLFormElement | null>(null);
+const formAdd = ref<HTMLFormElement | null>(null);
 
-  tarefas.value = request.data
-  pagination.value = {
-    page: request.page,
-    per_page: request.per_page,
-    next_page_url: request.next_page_url,
-    prev_page_url: request.prev_page_url
-  };
+// const pagination = ref({
+//   page: 1,
+//   per_page: 5,
+//   next_page_url: null,
+//   prev_page_url: null,
+// });
 
+const modal = ref(false);
+const confirm = ref(false);
+
+function toggleModal() {
+  modal.value = !modal.value;
+}
+
+async function submitForm(): Promise<void> {
+  try {
+    if (useTarefaStore.idTarefa != 0) {
+      await update(useTarefaStore.idTarefa, payload.value);
+    } else {
+      const data = await post<TaskApi>(payload.value);
+      tarefa.value = data.data;
+    }
+  } catch {
+    return;
+  } finally {
+    await request();
+  }
+}
+
+async function showTask(id: number) {
+  try {
+    const data = await show<TaskApi>(id);
+    tarefa.value = data.data;
+    useTarefaStore.setIdTarefa(id);
+  } catch {
+    return;
+  }
+}
+
+async function removeTask(id: number): Promise<void> {
+  await destroy(id);
+}
+
+async function request(): Promise<void> {
+  try {
+    const request = await index<TaskApi>(form.value);
+    tarefas.value = request.data;
+  } catch {
+    return;
+  }
 }
 
 onMounted(async () => {
-
-request();
-
-console.log('Request de tarefas', pagination.value);
+  await request();
 });
-
-// const items = ref([
-//   { message: 'Teste Teste Teste', completed: false, isEditing: false },
-//   { message: 'Farinha Farinha Farinha', completed: false, isEditing: false },
-//   { message: 'Bolo Bolo Bolo', completed: false, isEditing: false },
-//   { message: 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA', completed: false, isEditing: false },
-// ]);
-
-// Paginação do card
-const currentPage = ref(1);
-const itemsPerPage = ref(4);
-
-const paginatedItems = computed(() => {
-  const startIndex = (currentPage.value - 1) * itemsPerPage.value;
-  const endIndex = startIndex + itemsPerPage.value;
-  console.log(`startIndex: ${startIndex}, endIndex: ${endIndex}`);
-  console.log('filteredItems', filteredItems.value.slice(startIndex, endIndex));
-
-  return filteredItems.value.slice(startIndex, endIndex);
-});
-
-const confirm = ref(false);
-
-const form = ref<Tasks>({
-  searchTasks: '',
-  addTask: '',
-});
-
-// Filtrar por uma tarefa
-const filteredItems = computed(() => {
-  if (!form.value.searchTasks) {
-    return items.value;
-  }
-
-  const searchTerm = form.value.searchTasks.toLowerCase();
-
-  return items.value.filter((item) => item.message.toLowerCase().includes(searchTerm));
-});
-
-// Adicionar uma nova tarefa no array items
-function addNewTask() {
-  if (form.value.addTask.trim()) {
-    items.value.push({
-      message: form.value.addTask.trim(),
-      completed: false,
-      isEditing: false,
-    });
-
-    form.value.addTask = '';
-  }
-}
-
-// Editar uma tarefa
-function editTask(idTarefa: number, index: number) {
-  // const tarefa = 
-  console.log('Tarefa', tarefa);
-  const item = items.value[idTarefa];
-
-  if (item) {
-    item.isEditing = !item.isEditing;
-  }
-}
-
-function removeTask(index: number) {
-  items.value.splice(index, 1);
-}
 
 defineOptions({
   name: 'TasksPage',
