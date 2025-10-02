@@ -13,6 +13,10 @@ export interface TaskApi {
   updated_at?: string;
 }
 
+export interface modalAddEdit {
+  status: string,
+}
+
 export interface OptionsStatus {
   value: string;
   label: string;

@@ -13,7 +13,7 @@
         </div>
         <div class="col-6">
           <InputComponent
-            v-model="form.name"
+            v-model="form.nome"
             :label="t('nome')"
             :rules="[(val) => !!val || t('textValidacaoNome')]"
           />
@@ -78,18 +78,37 @@
 
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n';
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import { type Profile } from './Util/Interface';
 import InputComponent from 'src/components/Inputs/InputComponent.vue';
 
+import useService from './Util/Service';
+
 const { t } = useI18n();
 
+const { getUser } = useService('api/me');
+
 const form = ref<Profile>({
-  name: '',
+  nome: '',
   email: '',
   password: '',
   newPassword: '',
   confirmPassword: '',
+});
+
+async function getProfileUser(): Promise<void> {
+  try {
+    const request = await getUser<Profile>();
+
+    form.value.nome = request.data.nome;
+    form.value.email = request.data.email;
+  } catch {
+    return;
+  }
+}
+
+onMounted(async () => {
+  await getProfileUser();
 });
 
 defineOptions({

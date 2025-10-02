@@ -1,5 +1,7 @@
-import { defineBoot } from '#q-app/wrappers';
 import axios, { type AxiosInstance } from 'axios';
+import { boot } from 'quasar/wrappers';
+import { Notify } from 'quasar';
+import { authStore } from 'src/stores/auth';
 
 declare module 'vue' {
   interface ComponentCustomProperties {
@@ -14,9 +16,54 @@ declare module 'vue' {
 // good idea to move this instance creation inside of the
 // "export default () => {}" function below (which runs individually
 // for each client)
-const api = axios.create({ baseURL: 'http://localhost:8000/api/' });
+const api = axios.create({ baseURL: process.env.API_URL as string });
 
-export default defineBoot(({ app }) => {
+export default boot(({ app }) => {
+  const useAuthStore = authStore();
+
+  api.defaults.withCredentials = true;
+  api.defaults.withXSRFToken = true;
+
+  api.interceptors.response.use(
+    (response) => response,
+    async (error) => {
+      if (error.response && [500, 504].includes(error.response.status)) {
+        Notify.create({
+          type: 'negative',
+          message: 'Houve um erro. Tente novamente.',
+          progress: true,
+        });
+      }
+
+      if (
+        error?.response &&
+        typeof error?.response.data?.message === 'string' &&
+        !error?.response.data?.errors
+      ) {
+        Notify.create({
+          type: 'negative',
+          message: error?.response.data.message,
+        });
+      }
+
+      if (error.response && [401, 419].includes(error.response.status)) {
+        useAuthStore.resetUserData();
+        window.location.href = '/login';
+      }
+
+      // eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors
+      return Promise.reject(error);
+    },
+  );
+
+  api.interceptors.request.use((config) => {
+    const token = useAuthStore.token;
+
+    config.headers.Authorization = `Bearer ${token}`;
+    
+    return config;
+  });
+
   // for use inside Vue files (Options API) through this.$axios and this.$api
 
   app.config.globalProperties.$axios = axios;

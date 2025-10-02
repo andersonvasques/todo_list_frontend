@@ -4,10 +4,11 @@
       <q-form ref="formFilter" @submit.prevent="request" class="q-gutter-md">
         <div class="row">
           <q-select
+            transition-show="jump-up"
+            transition-hide="jump-up"
             style="width: 400px"
             rounded
             outlined
-            color="white"
             v-model="form.status"
             label="Status"
             dense
@@ -19,7 +20,6 @@
             style="width: 400px"
             rounded
             outlined
-            color="white"
             v-model="form.titulo"
             :label="t('titulo')"
             dense
@@ -29,14 +29,21 @@
             </template>
           </q-input>
           <div>
-            <q-btn label="Submit" type="submit" color="primary" />
-            <q-btn label="Reset" type="reset" color="primary" flat class="q-ml-sm" />
+            <q-btn label="Enviar" type="submit" flat color="primary" />
+            <q-btn
+              label="Limpar"
+              @click="clearStatus"
+              v-model="filterStatus"
+              type="reset"
+              color="primary"
+              flat
+              class="q-ml-sm"
+            />
             <q-btn
               label="Adicionar"
               @click="toggleModal"
               type="button"
               color="primary"
-              flat
               class="q-ml-sm"
             />
           </div>
@@ -45,8 +52,32 @@
       <q-table :columns="columns" :rows="tarefas" row-key="id">
         <template v-slot:body-cell-actions="scope">
           <q-td :props="scope">
-            <q-btn class="q-mx-sm" flat :icon="outlinedEdit" @click="showTask(scope.row.id)" />
-            <q-btn color="negative" flat :icon="outlinedDelete" @click="removeTask(scope.row.id)" />
+            <q-btn class="q-mx-sm" flat :icon="outlinedEdit" @click="editTask(scope.row.id)" />
+            <q-btn color="negative" flat :icon="outlinedDelete" @click="confirmDeletar = true" />
+            <q-dialog
+              transition-show="flip-down"
+              transition-hide="flip-up"
+              v-model="confirmDeletar"
+              persistent
+            >
+              <q-card>
+                <q-card-section class="row items-center">
+                  <q-avatar icon="delete" color="negative" text-color="white" />
+                  <span class="q-ml-sm"> Tem certeza que deseja deletar? </span>
+                </q-card-section>
+
+                <q-card-actions align="right">
+                  <q-btn flat label="Cancelar" color="primary" v-close-popup />
+                  <q-btn
+                    flat
+                    label="Deletar"
+                    @click="removeTask(scope.row.id)"
+                    color="primary"
+                    v-close-popup
+                  />
+                </q-card-actions>
+              </q-card>
+            </q-dialog>
           </q-td>
         </template>
       </q-table>
@@ -69,7 +100,7 @@
 
               <q-card-actions align="right">
                 <q-btn flat label="Cancelar" color="primary" v-close-popup />
-                <q-btn flat label="Sair" to="/login" color="primary" v-close-popup />
+                <q-btn flat label="Sair" @click="logout" color="primary" v-close-popup />
               </q-card-actions>
             </q-card>
           </q-dialog>
@@ -82,31 +113,38 @@
   <q-dialog v-model="modal">
     <q-card>
       <q-card-section>
-        <div class="text-h6">Alert</div>
+        <div class="text-h6">Tarefa</div>
       </q-card-section>
 
       <q-card-section class="q-pt-none">
         <q-card>
           <q-form ref="formAdd" @submit.prevent="submitForm" class="q-gutter-md">
             <div>
-              <q-btn label="Submit" type="submit" color="primary" />
-              <q-btn :label="t('cancelar')" type="button" color="primary" flat class="q-ml-sm" />
-
-              <q-input
-                rounded
-                outlinedS
-                color="white"
-                v-model="payload.titulo"
-                :label="t('titulo')"
+              <q-input rounded color="white" v-model="payload.titulo" :label="t('titulo')" dense />
+              <q-select
+                filled
+                transition-show="jump-up"
+                transition-hide="jump-up"
+                map-options
+                emit-values
+                v-model="formModal.status"
+                :options="optionsTarefa"
+                label="Status"
+                stack-label
                 dense
+              />
+              <q-btn label="Submit" type="submit" color="primary" />
+              <q-btn
+                :label="t('cancelar')"
+                type="button"
+                color="primary"
+                @click="toggleModal"
+                flat
+                class="q-ml-sm"
               />
             </div>
           </q-form>
         </q-card>
-      </q-card-section>
-
-      <q-card-section align="right">
-        <q-btn flat type="button" label="OK" color="primary" @click="toggleModal" />
       </q-card-section>
     </q-card>
   </q-dialog>
@@ -115,14 +153,15 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { type OptionsStatus, type TaskApi } from './Util/Interface';
+import { type modalAddEdit, type OptionsStatus, type TaskApi } from './Util/Interface';
 import useApi from 'src/composables/useApi';
 
 import { tarefaStore } from 'src/stores/tarefa';
+import { authStore } from 'src/stores/auth';
 
 import { outlinedEdit, outlinedDelete } from '@quasar/extras/material-icons-outlined';
 import { onMounted } from 'vue';
-import { type QTableColumn } from 'quasar';
+import { Notify, type QTableColumn } from 'quasar';
 
 const { t } = useI18n();
 
@@ -157,16 +196,22 @@ const tarefa = ref<TaskApi>({
   titulo: '',
 });
 
-const { index, show, post, update, destroy } = useApi('tarefas');
+const { index, show, post, update, destroy } = useApi('api/tarefas');
 
 const useTarefaStore = tarefaStore();
+const useAuthStore = authStore();
 
 const form = ref<TaskApi>({
   status: '',
   titulo: '',
 });
 
+const formModal = ref<modalAddEdit>({
+  status: '',
+});
+
 const payload = ref<TaskApi>({
+  id: 0,
   titulo: '',
   status_label: '',
   status: '',
@@ -177,36 +222,67 @@ const optionsStatus = ref<OptionsStatus[]>([
   { value: 'Concluido', label: 'Concluido' },
 ]);
 
+const optionsTarefa = ref<OptionsStatus[]>([
+  { value: 'Aberto', label: 'Aberto' },
+  { value: 'Concluido', label: 'Concluido' },
+]);
+
 const formFilter = ref<HTMLFormElement | null>(null);
 const formAdd = ref<HTMLFormElement | null>(null);
 
-// const pagination = ref({
-//   page: 1,
-//   per_page: 5,
-//   next_page_url: null,
-//   prev_page_url: null,
-// });
-
 const modal = ref(false);
 const confirm = ref(false);
+const confirmDeletar = ref(false);
+const filterStatus = ref(false);
 
 function toggleModal() {
   modal.value = !modal.value;
+  payload.value.titulo = '';
+}
+
+async function clearStatus(): Promise<void> {
+  form.value.status = '';
+  form.value.titulo = '';
+  await request();
+}
+
+async function logout(): Promise<void> {
+  try {
+    await useAuthStore.handleLogout();
+  } catch {
+    Notify.create({
+      type: 'negative',
+      message: 'Houve um erro. Tente novamente.',
+      progress: true,
+    });
+  }
 }
 
 async function submitForm(): Promise<void> {
   try {
     if (useTarefaStore.idTarefa != 0) {
       await update(useTarefaStore.idTarefa, payload.value);
+      payload.value.titulo = '';
     } else {
       const data = await post<TaskApi>(payload.value);
       tarefa.value = data.data;
+      payload.value.titulo = '';
     }
   } catch {
     return;
   } finally {
     await request();
+    toggleModal();
   }
+}
+
+async function editTask(id: number): Promise<void> {
+  await showTask(id);
+  toggleModal();
+
+  payload.value.titulo = tarefa.value.titulo;
+  payload.value.id = tarefa.value.id;
+  payload.value.status = tarefa.value.status_label;
 }
 
 async function showTask(id: number) {
@@ -220,7 +296,13 @@ async function showTask(id: number) {
 }
 
 async function removeTask(id: number): Promise<void> {
-  await destroy(id);
+  try {
+    await destroy(id);
+  } catch {
+    return;
+  } finally {
+    await request();
+  }
 }
 
 async function request(): Promise<void> {

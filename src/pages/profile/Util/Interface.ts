@@ -1,5 +1,5 @@
 export interface Profile {
-    name: string,
+    nome: string,
     email: string,
     password: string,
     newPassword: string,
