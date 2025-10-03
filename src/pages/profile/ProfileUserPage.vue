@@ -102,7 +102,9 @@ async function getProfileUser(): Promise<void> {
 
     form.value.nome = request.data.nome;
     form.value.email = request.data.email;
+
   } catch {
+    
     return;
   }
 }

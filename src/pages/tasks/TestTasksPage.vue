@@ -52,6 +52,7 @@
       <q-table :columns="columns" :rows="tarefas" row-key="id">
         <template v-slot:body-cell-actions="scope">
           <q-td :props="scope">
+            <q-btn color="primary" flat icon="check" @click="checkedTarefa(scope.row.id)" />
             <q-btn class="q-mx-sm" flat :icon="outlinedEdit" @click="editTask(scope.row.id)" />
             <q-btn color="negative" flat :icon="outlinedDelete" @click="confirmDeletar = true" />
             <q-dialog
@@ -121,18 +122,6 @@
           <q-form ref="formAdd" @submit.prevent="submitForm" class="q-gutter-md">
             <div>
               <q-input rounded color="white" v-model="payload.titulo" :label="t('titulo')" dense />
-              <q-select
-                filled
-                transition-show="jump-up"
-                transition-hide="jump-up"
-                map-options
-                emit-values
-                v-model="formModal.status"
-                :options="optionsTarefa"
-                label="Status"
-                stack-label
-                dense
-              />
               <q-btn label="Submit" type="submit" color="primary" />
               <q-btn
                 :label="t('cancelar')"
@@ -194,6 +183,11 @@ const tarefas = ref<TaskApi[]>([]);
 const tarefa = ref<TaskApi>({
   status: '',
   titulo: '',
+  id: 0,
+  created_at: '',
+  updated_at: '',
+  id_user: 0,
+  status_label: '',
 });
 
 const { index, show, post, update, destroy } = useApi('api/tarefas');
@@ -204,6 +198,11 @@ const useAuthStore = authStore();
 const form = ref<TaskApi>({
   status: '',
   titulo: '',
+  id: 0,
+  created_at: '',
+  updated_at: '',
+  id_user: 0,
+  status_label: '',
 });
 
 const formModal = ref<modalAddEdit>({
@@ -211,18 +210,16 @@ const formModal = ref<modalAddEdit>({
 });
 
 const payload = ref<TaskApi>({
-  id: 0,
-  titulo: '',
-  status_label: '',
   status: '',
+  titulo: '',
+  id: 0,
+  created_at: '',
+  updated_at: '',
+  id_user: 0,
+  status_label: '',
 });
 
 const optionsStatus = ref<OptionsStatus[]>([
-  { value: 'Aberto', label: 'Aberto' },
-  { value: 'Concluido', label: 'Concluido' },
-]);
-
-const optionsTarefa = ref<OptionsStatus[]>([
   { value: 'Aberto', label: 'Aberto' },
   { value: 'Concluido', label: 'Concluido' },
 ]);
@@ -238,6 +235,11 @@ const filterStatus = ref(false);
 function toggleModal() {
   modal.value = !modal.value;
   payload.value.titulo = '';
+  formModal.value.status = 'Aberto';
+
+  if (modal.value == false) {
+    useTarefaStore.resetIdTarefa();
+  }
 }
 
 async function clearStatus(): Promise<void> {
@@ -261,19 +263,41 @@ async function logout(): Promise<void> {
 async function submitForm(): Promise<void> {
   try {
     if (useTarefaStore.idTarefa != 0) {
+      // Editando
+
       await update(useTarefaStore.idTarefa, payload.value);
       payload.value.titulo = '';
     } else {
+      // Adicionando
+
       const data = await post<TaskApi>(payload.value);
       tarefa.value = data.data;
+
       payload.value.titulo = '';
     }
-  } catch {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    Notify.create({
+      type: 'negative',
+      message: error.response.data.message,
+      progress: true,
+    });
     return;
   } finally {
     await request();
-    toggleModal();
+    modal.value = false;
+    // toggleModal();
   }
+}
+
+async function checkedTarefa(id: number): Promise<void> {
+  await showTask(id);
+
+  payload.value.status = 'Concluido';
+  payload.value.titulo = tarefa.value.titulo;
+  payload.value.id = tarefa.value.id;
+
+  await submitForm();
 }
 
 async function editTask(id: number): Promise<void> {
@@ -285,7 +309,7 @@ async function editTask(id: number): Promise<void> {
   payload.value.status = tarefa.value.status_label;
 }
 
-async function showTask(id: number) {
+async function showTask(id: number): Promise<void> {
   try {
     const data = await show<TaskApi>(id);
     tarefa.value = data.data;
@@ -299,6 +323,7 @@ async function removeTask(id: number): Promise<void> {
   try {
     await destroy(id);
   } catch {
+
     return;
   } finally {
     await request();
@@ -322,13 +347,3 @@ defineOptions({
   name: 'TasksPage',
 });
 </script>
-
-<!-- Adicionando reticências -->
-<style scoped>
-.task-text {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 350px;
-}
-</style>

@@ -42,7 +42,7 @@ export const authStore = defineStore(
         await api.post('/api/logout');
       } finally {
         resetUserData();
-        window.location.href = '/login';
+        this.router.push({ name: 'login-page' })
       }
     }
 

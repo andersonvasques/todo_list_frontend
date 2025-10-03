@@ -47,7 +47,7 @@ const form = ref<Login>({
   password: '123456',
 });
 
-const formAdd = ref<HTMLElement | null>(null);
+const formAdd = ref<HTMLFormElement | null>(null);
 
 async function login(): Promise<void> {
   await useAuthStore.handleLogin(form.value);
@@ -56,4 +56,5 @@ async function login(): Promise<void> {
 defineOptions({
   name: 'LoginPage',
 });
+
 </script>
